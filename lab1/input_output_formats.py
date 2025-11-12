@@ -12,4 +12,6 @@ class TopicSpec(BaseModel):
 
 class ResultSummary(BaseModel):
     topic: str = Field(default="Unknown topic", description="User query's main topic")
-    response: str = Field(default="None", description="Response for the user's query")
+    # response: str = Field(default="None", description="Response for the user's query")
+    arxiv_api_response: str = Field(default="None", description="Response for the user's query from ArXix API")
+    crossref_api_response: str = Field(default="None", description="Response for the user's query from CrossRef API")

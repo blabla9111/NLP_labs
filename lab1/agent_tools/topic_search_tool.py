@@ -3,8 +3,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain.tools import tool
 
-from input_output_formats import TopicSpec
-import config
+from lab1.input_output_formats import TopicSpec
+from lab1 import config
 
 
 

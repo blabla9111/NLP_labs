@@ -1,9 +1,10 @@
 import requests
 from typing import List, Dict, Optional
-from input_output_formats import ResearchPaper
+from lab1.input_output_formats import ResearchPaper, TopicSpec
+from langchain.tools import tool
 
 
-def search_crossref(query: str, rows: int = 5) -> List[Dict]:
+def get_papers_from_crossref(query: str, rows: int = 3) -> List[Dict]:
     """
     Поиск статей в Crossref и извлечение структурированной информации
     """
@@ -73,12 +74,12 @@ def search_crossref(query: str, rows: int = 5) -> List[Dict]:
     
     return papers
 
-# Пример использования
-def get_structured_crossref_papers(query: str) -> List[ResearchPaper]:
+# @tool(description="tool for find papers in the Crossref website",args_schema=TopicSpec)
+def search_crossref(topic, max_results = 3) -> str:
     """
     Получает статьи из Crossref и возвращает как список ResearchPaper объектов
     """
-    papers_data = search_crossref(query)
+    papers_data = get_papers_from_crossref(topic, max_results)
     research_papers = []
     
     for paper_dict in papers_data:
@@ -86,15 +87,3 @@ def get_structured_crossref_papers(query: str) -> List[ResearchPaper]:
         research_papers.append(research_paper)
     
     return research_papers
-
-# Использование
-if __name__ == "__main__":
-    papers = get_structured_crossref_papers("neural network")
-    
-    for i, paper in enumerate(papers, 1):
-        print(f"{i}. {paper.title}")
-        print(f"   Authors: {paper.authors}")
-        print(f"   Published: {paper.published}")
-        print(f"   URL: {paper.url}")
-        print(f"   Abstract: {paper.abstract[:200]}...")
-        print("-" * 60)

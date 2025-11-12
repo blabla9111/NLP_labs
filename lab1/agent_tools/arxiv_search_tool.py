@@ -1,12 +1,12 @@
 
-from input_output_formats import ResearchPaper, TopicSpec
 from langchain.tools import tool
+from lab1.input_output_formats import ResearchPaper, TopicSpec
 
 import arxiv
 
 
 
-@tool(description="tool for find papers in the ArXiv website",args_schema=TopicSpec)
+# @tool(description="tool for find papers in the ArXiv website",args_schema=TopicSpec)
 def arxiv_search(topic, max_results = 3) -> str:
     client = arxiv.Client()
     search = arxiv.Search(query= topic, max_results=max_results, sort_by=arxiv.SortCriterion.Relevance)
