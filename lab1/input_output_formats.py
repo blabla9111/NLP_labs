@@ -15,3 +15,8 @@ class ResultSummary(BaseModel):
     # response: str = Field(default="None", description="Response for the user's query")
     arxiv_api_response: str = Field(default="None", description="Response for the user's query from ArXix API")
     crossref_api_response: str = Field(default="None", description="Response for the user's query from CrossRef API")
+
+class ResearchSummary(BaseModel):
+    trends_info: str =  Field(default="No trends", description="Trends in the topic area")
+    methods: str = Field(default="No methods", description="Used methods in the papers")
+    limitations: str = Field(default="No limitations", description="Limitations and disadvantages in the papers")
