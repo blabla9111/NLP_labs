@@ -1,7 +1,7 @@
 import requests
-from typing import List, Dict, Optional
-from lab1.input_output_formats import ResearchPaper, TopicSpec
-from langchain.tools import tool
+from typing import List, Dict
+from lab1.input_output_formats import ResearchPaper
+import random
 
 
 def get_papers_from_crossref(query: str, rows: int = 3) -> List[Dict]:
@@ -74,16 +74,33 @@ def get_papers_from_crossref(query: str, rows: int = 3) -> List[Dict]:
     
     return papers
 
-# @tool(description="tool for find papers in the Crossref website",args_schema=TopicSpec)
 def search_crossref(topic, max_results = 3) -> str:
     """
     Получает статьи из Crossref и возвращает как список ResearchPaper объектов
     """
+    print("Crossref RESEARCH START\n\n")
+    # Генерируем случайное число от 0 до 1
+    random_value = random.random()
+    
+    # 40% вероятность ошибки
+    if random_value < 0.4:
+        errors = [
+            ConnectionError("Timeout connecting to Crossref API"),
+            TimeoutError("Server response timeout"),
+            Exception("Crossref API is temporarily unavailable"),
+            ConnectionError("Network connection lost"),
+            Exception("Unexpected API error - please try again")
+        ]
+        raise random.choice(errors)
     papers_data = get_papers_from_crossref(topic, max_results)
     research_papers = []
     
     for paper_dict in papers_data:
         research_paper = ResearchPaper(**paper_dict)
         research_papers.append(research_paper)
+
+    # print("\n\n")
+    # print("research_papers_crossref_api_results")
+    # print(research_papers)
     
     return research_papers
