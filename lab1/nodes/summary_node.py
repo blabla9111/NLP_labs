@@ -1,7 +1,9 @@
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 
 from lab1.input_output_formats import GraphState, ResearchSummary
+from lab1.utils.retry_parser import RetryParser
 
 
 class SummaryGenerator:
@@ -51,7 +53,8 @@ class SummaryGenerator:
         arxiv_papers_info = state["result_summary"].arxiv_api_response
         crossref_papers_info = state["result_summary"].crossref_api_response
 
-        chain = self.prompt | self.llm | self.parser
+        chain = self.prompt | RunnableParallel(output=self.llm, prompt=RunnablePassthrough(
+        )) | RetryParser(llm=self.llm, parser=self.parser)
 
         output: ResearchSummary = chain.invoke({
             "topic": topic,
