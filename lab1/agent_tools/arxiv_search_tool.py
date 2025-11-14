@@ -5,11 +5,11 @@ import arxiv
 import random
 
 
-def arxiv_search(topic, max_results = 3) -> str:
+def arxiv_search(topic, max_results=3) -> str:
     print("ARXIV RESEARCH START\n\n")
     # Генерируем случайное число от 0 до 1
     random_value = random.random()
-    
+
     # 40% вероятность ошибки
     if random_value < 0.4:
         errors = [
@@ -21,7 +21,8 @@ def arxiv_search(topic, max_results = 3) -> str:
         ]
         raise random.choice(errors)
     client = arxiv.Client()
-    search = arxiv.Search(query= topic, max_results=max_results, sort_by=arxiv.SortCriterion.Relevance)
+    search = arxiv.Search(query=topic, max_results=max_results,
+                          sort_by=arxiv.SortCriterion.Relevance)
     papers = []
 
     for result in client.results(search):
@@ -29,7 +30,7 @@ def arxiv_search(topic, max_results = 3) -> str:
         papers.append(ResearchPaper(title=result.title,
                                     authors=authors,
                                     abstract=result.summary,
-                                    url = result.entry_id,
+                                    url=result.entry_id,
                                     published=str(result.published.date())))
-        
+
     return str(papers)

@@ -1,7 +1,8 @@
 from input_output_formats import ResearchSummary, GraphState
 
+
 class ResearchReportWriter:
-    def __init__(self, default_filename = "research_report.txt"):
+    def __init__(self, default_filename="research_report.txt"):
         self.default_filename = default_filename
 
     def write_beautiful_report(self, topic: str, research_summary: ResearchSummary, filename: str = None) -> str:
@@ -20,19 +21,16 @@ class ResearchReportWriter:
             # Current Trends Section
             f.write("🚀 CURRENT TRENDS & EMERGING THEMES\n")
             f.write("-" * 50 + "\n")
-            # trends_text = self._clean_text_field(research_summary.trends_info)
             f.write(research_summary.trends_info + "\n\n")
 
             # Methodologies Section
             f.write("🔧 KEY METHODOLOGIES & APPROACHES\n")
             f.write("-" * 50 + "\n")
-            # methods_text = self._clean_text_field(research_summary.methods)
             f.write(research_summary.methods + "\n\n")
 
             # Limitations Section
             f.write("⚠️ LIMITATIONS & CHALLENGES\n")
             f.write("-" * 50 + "\n")
-            # limitations_text = self._clean_text_field(research_summary.limitations)
             f.write(research_summary.limitations + "\n\n")
 
             # Footer
@@ -42,16 +40,15 @@ class ResearchReportWriter:
 
             print(f"✅ Research analysis successfully written to {filename}")
         return filename
-    
+
     def write_from_state(self, state: GraphState) -> GraphState:
 
         filename = self.write_beautiful_report(
-                topic=state['result_summary'].topic,
-                research_summary=state['research_summary']
-            )
-        
+            topic=state['result_summary'].topic,
+            research_summary=state['research_summary']
+        )
+
         return state
-    
+
     def __call__(self, state: GraphState) -> GraphState:
         return self.write_from_state(state)
-    

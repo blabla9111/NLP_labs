@@ -2,6 +2,7 @@ from lab1.input_output_formats import ResultSummary, GraphState
 from langchain.agents.structured_output import ToolStrategy
 from langchain.agents import create_agent
 
+
 class AgentNode:
     def __init__(self, model, tools, response_format=ToolStrategy(ResultSummary)):
         self.agent = create_agent(

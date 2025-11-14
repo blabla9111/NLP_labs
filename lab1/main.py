@@ -6,17 +6,10 @@ from input_output_formats import ResultSummary, ResearchSummary, GraphState
 from lab1.agent_tools.do_research_tool import do_research
 from lab1.agent_tools.new_query_tool import get_new_query_from_user
 from lab1.agent_tools.topic_search_tool import get_topic
-from lab1.agent_tools.arxiv_search_tool import arxiv_search
-from current_date_tool import get_weather
 import config
 from langchain.agents.structured_output import ToolStrategy
 from langgraph.graph import StateGraph, START, END
-from typing import Any, Dict, List, Annotated, TypedDict
-import operator
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain.agents import create_agent
-from langchain_core.output_parsers import PydanticOutputParser
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_deepseek.chat_models import ChatDeepSeek
 
 
@@ -24,10 +17,6 @@ from langchain_deepseek.chat_models import ChatDeepSeek
 from lab1.nodes.agent_node import AgentNode
 from lab1.nodes.summary_node import SummaryGenerator
 from lab1.nodes.writer_node import ResearchReportWriter
-
-# Add the parent directory to Python path
-
-
 
 llm = ChatDeepSeek(
     api_base=config.BASE_URL,
