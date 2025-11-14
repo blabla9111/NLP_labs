@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import List, TypedDict
 
 class ResearchPaper(BaseModel):
     title: str = Field(default="Untitled Paper", description="Title of research paper")
@@ -20,3 +21,10 @@ class ResearchSummary(BaseModel):
     trends_info: str =  Field(default="No trends", description="Trends in the topic area")
     methods: str = Field(default="No methods", description="Used methods in the papers")
     limitations: str = Field(default="No limitations", description="Limitations and disadvantages in the papers")
+
+class GraphState(TypedDict):
+    messages: List  # Сообщения (SystemMessage, HumanMessage)
+    # intermediate_steps: Annotated[List[tuple], operator.add]  # Шаги выполнения
+    current_response: str  # Текущий ответ
+    result_summary: ResultSummary
+    research_summary: ResearchSummary
