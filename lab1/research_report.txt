@@ -1,25 +1,25 @@
 ================================================================================
 RESEARCH ANALYSIS REPORT
-TOPIC: Physics-Informed Neural Networks (PINN)
+TOPIC: PINN in epidemiology
 ================================================================================
 
 🚀 CURRENT TRENDS & EMERGING THEMES
 --------------------------------------------------
-Current trends in Physics-Informed Neural Networks (PINNs) include adaptive training mechanisms (e.g., self-adaptive attention weights), integration with large language models (LLMs) for automation, application to complex domains like thermal and biomedical modeling, and hybridization with mathematical frameworks like polynomial chaos theory. Emerging themes focus on improving convergence, reducing manual effort in PINN design, and enhancing interpretability through orthonormal representations.
+Current trends include applying physics-informed neural networks (PINNs) to contact-driven epidemic models, integrating mechanistic epidemiological frameworks (e.g., SIR models) with data-driven approaches, and incorporating structured factors like age distribution and contact patterns to improve realism. Research emphasizes parameter learning from data while solving differential equations governing disease spread.
 
 🔧 KEY METHODOLOGIES & APPROACHES
 --------------------------------------------------
-Key methodologies include soft attention mechanisms for adaptive loss weighting, multi-agent LLM-driven frameworks for end-to-end PINN generation, arbitrary polynomial chaos (aPC) theory for orthonormal signal processing, Gaussian Process regression for continuous weight mapping, and modular code generation. Experimental approaches involve benchmarking against linear/nonlinear PDEs, stochastic gradient descent optimization, and error analysis via Neural Tangent Kernel matrices.
+PINNs are trained to solve systems of differential equations (e.g., SIR models) while learning model parameters from data. Methods include applying PINNs to both simple (SIR) and complex models with age structure and contact patterns. Training involves minimizing residuals of governing equations alongside data fitting objectives.
 
 ⚠️ LIMITATIONS & CHALLENGES
 --------------------------------------------------
-Limitations highlighted include computational complexity from adaptive weight training, reliance on LLM accuracy for automated PINN construction, assumptions of Gaussian distributions in traditional DANNs, data dependency in disease modeling applications, and challenges in generalizing tunable stiffness parameters for mechanical systems. Methodological gaps exist in handling high-dimensional PDEs and ensuring orthogonality in neural signal representations.
+No explicit limitations are stated in the provided summaries. However, common PINN challenges (not specific to this paper) may include computational complexity, sensitivity to initial conditions, and limited generalizability to high-dimensional or heterogeneous data.
 
 📂 RELEVANT GITHUB REPOSITORIES
 --------------------------------------------------
-https://github.com/SciML/NeuralPDE.jl
-https://github.com/rezaakb/pinns-torch
-https://github.com/omniscientoctopus/Physics-Informed-Neural-Networks
+https://github.com/denisecammarota/pinn-infectious-disease
+https://github.com/danikimkcl/pinnacleproject
+https://github.com/giacomoguidotto/bsc-thesis
 
 ================================================================================
 END OF REPORT

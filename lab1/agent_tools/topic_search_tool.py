@@ -11,16 +11,35 @@ from lab1 import config
 def get_topic(user_query) -> str:
     parser = PydanticOutputParser(pydantic_object=TopicSpec)
     prompt = ChatPromptTemplate(messages=[
-        ("system", """You are an expert task analyzer. Extract and categorize tasks from user queries.
-            Analyze the user query to identify main topic.
-            {format_instructions}
-            result_output = {schema}
-            
-            Return ONLY valid JSON in this exact format."""),
+                    ("system", """You are an expert scientific topic analyzer. Your task is to extract ONLY the main scientific topic from the user query.
 
-        ("human", "User query: {query}")
-    ],
-        partial_variables={"format_instructions": parser.get_format_instructions()})
+                INSTRUCTIONS:
+                1. Analyze the user query and identify the core scientific topic/research subject
+                2. If a clear scientific topic is present, extract it concisely
+                3. If no scientific topic can be identified, return "Unknown topic"
+                4. Do NOT add any explanations, commentary, or additional text
+                5. Return ONLY the topic name or "Unknown topic"
+
+                EXAMPLES:
+                - Input: "What are the latest developments in quantum computing?"
+                Output: "quantum computing"
+
+                - Input: "Find research papers about neural networks"
+                Output: "neural networks"
+
+                - Input: "Hello, how are you today?"
+                Output: "Unknown topic"
+
+                - Input: "Tell me about machine learning applications"
+                Output: "machine learning"
+
+                {format_instructions}
+                result_output = {schema}
+                Return ONLY valid JSON in this exact format."""),
+
+                    ("human", "User query: {query}")
+                ],
+                partial_variables={"format_instructions": parser.get_format_instructions()})
 
     llm = ChatDeepSeek(
         api_base=config.BASE_URL,

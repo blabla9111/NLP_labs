@@ -17,6 +17,12 @@ class AgentNode:
         for chunk in chunks:
             response_parts.append(str(chunk))
 
+            if isinstance(chunk, dict) and 'model' in chunk and 'messages' in chunk['model']:
+                    for msg in chunk['model']['messages']:
+                        if hasattr(msg, 'tool_calls') and msg.tool_calls:
+                            for tool_call in msg.tool_calls:
+                                print(f"Вызывается инструмент: {tool_call.get('name')}")
+
             if isinstance(chunk, dict) and chunk.get('model', {}).get('structured_response'):
                 structured_response = chunk['model']['structured_response']
 

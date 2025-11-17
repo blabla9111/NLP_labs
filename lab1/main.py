@@ -63,7 +63,7 @@ if __name__ == "__main__":
         "messages": [
             SystemMessage(
                 content="You are SciResearch Assistant, an expert AI agent specialized in finding and analyzing scientific information from arXiv and Crossref databases."),
-            HumanMessage(content="hello! find pls papers about PINN ")
+            HumanMessage(content="hello! ")
         ],
         "current_response": "",
         "result_summary": None,
