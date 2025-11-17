@@ -2,8 +2,8 @@ from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain.tools import tool
 
 from lab1.agent_tools.arxiv_search_tool import arxiv_search
-from lab1.agent_tools.crossref_api import search_crossref
-from lab1.input_output_formats import TopicSpec
+from lab1.agent_tools.crossref_api_tool import search_crossref
+from lab1.data_formats.input_output_formats import TopicSpec
 from lab1.utils.retry_decorator import retry_on_failure
 
 

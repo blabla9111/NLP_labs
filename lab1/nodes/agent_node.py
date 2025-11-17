@@ -1,4 +1,4 @@
-from lab1.input_output_formats import ResultSummary, GraphState
+from lab1.data_formats.input_output_formats import ResultSummary, GraphState
 from langchain.agents.structured_output import ToolStrategy
 from langchain.agents import create_agent
 
@@ -19,7 +19,6 @@ class AgentNode:
 
             if isinstance(chunk, dict) and chunk.get('model', {}).get('structured_response'):
                 structured_response = chunk['model']['structured_response']
-                # print("@@@@@@@@@@@@@@@")
 
         return {
             "current_response": structured_response,

@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain.tools import tool
 
-from lab1.input_output_formats import TopicSpec
+from lab1.data_formats.input_output_formats import TopicSpec
 from lab1 import config
 
 
@@ -28,7 +28,7 @@ def get_topic(user_query) -> str:
         api_key=config.API_KEY,
         model=config.MODEL_NAME,
         streaming=False,
-        timeout=120
+        timeout=240
     )
 
     chain = prompt | llm | parser

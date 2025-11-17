@@ -1,10 +1,10 @@
-from input_output_formats import GithubReposInfo, GraphState
+from lab1.data_formats.input_output_formats import GithubReposInfo, GraphState
 import requests
 from typing import List
 
 
 class GitHubRepoSearcher:
-    def __init__(self, github_token: str, default_max_results: int = 3):
+    def __init__(self, github_token: str, default_max_results: int = 10):
         self.github_token = github_token
         self.default_max_results = default_max_results
         self.base_url = "https://api.github.com/search/repositories"
@@ -44,11 +44,7 @@ class GitHubRepoSearcher:
     def get_github_repos(self, state: GraphState) -> GraphState:
         repos = self.search_github_repositories(
             state['result_summary'].topic, self.github_token, self.default_max_results)
-        print("\n\n\n!!!!!!!\n\n")
-        # print(state['topic'])
         urls_string = '\n'.join([repo.url for repo in repos])
-        print(urls_string)
-
         return {"urls": urls_string}
 
     def __call__(self, state: GraphState) -> GraphState:

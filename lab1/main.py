@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from input_output_formats import ResultSummary, ResearchSummary, GraphState
+from lab1.data_formats.input_output_formats import ResultSummary, ResearchSummary, GraphState
 from lab1.agent_tools.do_research_tool import do_research
 from lab1.agent_tools.new_query_tool import get_new_query_from_user
 from lab1.agent_tools.topic_search_tool import get_topic
@@ -55,7 +55,7 @@ graph = builder.compile()
 graph_png = graph.get_graph(xray=True)
 png_bytes = graph_png.draw_mermaid_png()
 
-with open("simple_agent.png", "wb") as f:
+with open("SciResearch_agent.png", "wb") as f:
     f.write(png_bytes)
 
 if __name__ == "__main__":
@@ -63,18 +63,17 @@ if __name__ == "__main__":
         "messages": [
             SystemMessage(
                 content="You are SciResearch Assistant, an expert AI agent specialized in finding and analyzing scientific information from arXiv and Crossref databases."),
-            HumanMessage(content="co-infection parameter inference")
+            HumanMessage(content="hello! find pls papers about PINN ")
         ],
-        # "intermediate_steps": [],
         "current_response": "",
         "result_summary": None,
         "urls": ""
     }
     final_state = graph.invoke(initial_state)
-    print("Final state is")
+    # print("Final state is")
     # print(final_state['messages'])
-    print("="*50)
-    print(final_state['research_summary'])
+    # print("="*50)
+    # print(final_state['research_summary'])
 
 
 # https://habr.com/ru/companies/amvera/articles/949376/ Создание умных AI-агентов: полный курс по LangGraph от А до Я.

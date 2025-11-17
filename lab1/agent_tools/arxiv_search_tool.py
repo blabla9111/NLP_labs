@@ -1,17 +1,17 @@
 
-from lab1.input_output_formats import ResearchPaper
+from lab1.data_formats.input_output_formats import ResearchPaper
 
 import arxiv
 import random
 
 
 def arxiv_search(topic, max_results=3) -> str:
-    print("ARXIV RESEARCH START\n\n")
+    # print("ARXIV RESEARCH START\n\n")
     # Генерируем случайное число от 0 до 1
     random_value = random.random()
 
     # 40% вероятность ошибки
-    if random_value < 0.4:
+    if random_value < 0.2:
         errors = [
             ConnectionError("Timeout connecting to arXiv API"),
             TimeoutError("Server response timeout"),

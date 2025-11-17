@@ -2,7 +2,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 
-from lab1.input_output_formats import GraphState, ResearchSummary
+from lab1.data_formats.input_output_formats import GraphState, ResearchSummary
 from lab1.utils.retry_parser import RetryParser
 
 
@@ -47,8 +47,6 @@ class SummaryGenerator:
             partial_variables={"format_instructions": self.parser.get_format_instructions()})
 
     def generate_summary(self, state: GraphState) -> GraphState:
-        print("START SUMMARIZING")
-
         topic = state["result_summary"].topic
         arxiv_papers_info = state["result_summary"].arxiv_api_response
         crossref_papers_info = state["result_summary"].crossref_api_response

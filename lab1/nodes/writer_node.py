@@ -1,4 +1,4 @@
-from input_output_formats import ResearchSummary, GraphState
+from lab1.data_formats.input_output_formats import ResearchSummary, GraphState
 
 
 class ResearchReportWriter:
@@ -49,7 +49,7 @@ class ResearchReportWriter:
 
         filename = self.write_beautiful_report(
             topic=state['result_summary'].topic,
-            research_summary=state['research_summary'], 
+            research_summary=state['research_summary'],
             urls=state["urls"]
         )
 

@@ -38,7 +38,6 @@ class ResearchSummary(BaseModel):
 
 class GraphState(TypedDict):
     messages: List  # Сообщения (SystemMessage, HumanMessage)
-    # intermediate_steps: Annotated[List[tuple], operator.add]  # Шаги выполнения
     current_response: str  # Текущий ответ
     result_summary: ResultSummary
     research_summary: ResearchSummary
