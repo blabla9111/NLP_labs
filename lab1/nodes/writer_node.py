@@ -5,7 +5,7 @@ class ResearchReportWriter:
     def __init__(self, default_filename="research_report.txt"):
         self.default_filename = default_filename
 
-    def write_beautiful_report(self, topic: str, research_summary: ResearchSummary, filename: str = None) -> str:
+    def write_beautiful_report(self, topic: str, research_summary: ResearchSummary, urls: str, filename: str = None) -> str:
 
         if filename is None:
             filename = self.default_filename
@@ -33,6 +33,10 @@ class ResearchReportWriter:
             f.write("-" * 50 + "\n")
             f.write(research_summary.limitations + "\n\n")
 
+            f.write("📂 RELEVANT GITHUB REPOSITORIES\n")
+            f.write("-" * 50 + "\n")
+            f.write(urls + "\n\n")
+
             # Footer
             f.write("=" * 80 + "\n")
             f.write("END OF REPORT\n")
@@ -45,7 +49,8 @@ class ResearchReportWriter:
 
         filename = self.write_beautiful_report(
             topic=state['result_summary'].topic,
-            research_summary=state['research_summary']
+            research_summary=state['research_summary'], 
+            urls=state["urls"]
         )
 
         return state

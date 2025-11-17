@@ -13,10 +13,10 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_deepseek.chat_models import ChatDeepSeek
 
 
-
 from lab1.nodes.agent_node import AgentNode
 from lab1.nodes.summary_node import SummaryGenerator
 from lab1.nodes.writer_node import ResearchReportWriter
+from lab1.nodes.github_node import GitHubRepoSearcher
 
 llm = ChatDeepSeek(
     api_base=config.BASE_URL,
@@ -31,6 +31,8 @@ agent_node = AgentNode(model=llm,
                        tools=[get_new_query_from_user, get_topic, do_research],
                        response_format=ToolStrategy(ResultSummary))
 
+github_node = GitHubRepoSearcher(github_token=config.GITHUB_API_TOKEN, default_max_results=3)
+
 summary_node = SummaryGenerator(model=llm, parser_output_class=ResearchSummary)
 
 writer_node = ResearchReportWriter()
@@ -39,10 +41,13 @@ writer_node = ResearchReportWriter()
 builder = StateGraph(GraphState)
 builder.add_node("ReActAgentNode", agent_node)
 builder.add_node("SummaryNode", summary_node)
+builder.add_node("Guthub_Node", github_node)
 builder.add_node("WriterNode", writer_node)
 
 builder.add_edge(START, "ReActAgentNode")
 builder.add_edge("ReActAgentNode", "SummaryNode")
+builder.add_edge("ReActAgentNode", "Guthub_Node")
+builder.add_edge("Guthub_Node", "WriterNode")
 builder.add_edge("SummaryNode", "WriterNode")
 builder.add_edge("WriterNode", END)
 
@@ -58,11 +63,12 @@ if __name__ == "__main__":
         "messages": [
             SystemMessage(
                 content="You are SciResearch Assistant, an expert AI agent specialized in finding and analyzing scientific information from arXiv and Crossref databases."),
-            HumanMessage(content="EMJMCMC algorithms")
+            HumanMessage(content="co-infection parameter inference")
         ],
         # "intermediate_steps": [],
         "current_response": "",
-        "result_summary": None
+        "result_summary": None,
+        "urls": ""
     }
     final_state = graph.invoke(initial_state)
     print("Final state is")
