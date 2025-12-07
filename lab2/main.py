@@ -11,6 +11,7 @@ from langchain_deepseek.chat_models import ChatDeepSeek
 
 from lab2.agents.react_agent import ReActAgent
 from lab2.agents.check_comment_agent import check_comment_validity, get_new_comment_from_expert
+from lab2.agent_tools.comment_classifier import get_class_subclass_names
 from lab2.data_formats.input_output_formats import GraphState, ExpertComment
 
 
@@ -25,7 +26,7 @@ llm = ChatDeepSeek(
 )
 
 react_agent = ReActAgent(model=llm,
-                         tools = [check_comment_validity, get_new_comment_from_expert],
+                         tools = [check_comment_validity, get_new_comment_from_expert, get_class_subclass_names],
                          response_format=ToolStrategy(ExpertComment))
 
 # agent_node = AgentNode(model=llm,
@@ -63,14 +64,16 @@ if __name__ == "__main__":
     # "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent."
     
     # Создаем улучшенный системный промпт
-    system_prompt = """You are an epidemiological forecast validation agent. Your task is check expert_comment validity
+    system_prompt = """You are an epidemiological forecast validation agent. 
+    Your task is check expert_comment validity and then find class and subclass for expert comment.
+
 
     Always respond in this exact format. Never add extra explanations or questions."""
 
     initial_state = {
         "messages": [
             SystemMessage(content=system_prompt),
-            HumanMessage(content="The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent.")
+            HumanMessage(content="I do not like. Curve should be smoother")
         ],
         "current_response": "",
         "expert_comment": None

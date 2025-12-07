@@ -7,6 +7,7 @@ from langchain.tools import tool
 from lab2 import config
 from lab2.utils.retry_parser import RetryParser
 from lab2.data_formats.input_output_formats import ExpertComment, GraphState
+from lab2.agents.retriever_agent import RetrieverAgent
 
 
 class CheckCommentAgent:
@@ -31,10 +32,18 @@ class CheckCommentAgent:
                 2.  **Clear Purpose:** The comment's purpose must be clearly stated—to clarify, correct, adjust, or change a **specific aspect** of the forecast.
                 3.  **Focused:** The comment should address **only one key issue**.
                 4.  **Objective Tone:** The comment must be free of emotion, subjective judgments, expressions of dissatisfaction, and unsubstantiated assumptions.
-                
 
                 **Expert Comment to Validate:**
                 {expert_comment}
+
+                **Similar Expert Comments from Database:**
+                {similar_comments}
+
+                **Additional Instructions:**
+                - Compare the new comment with the similar comments from the database
+                - Use the database examples as reference for what constitutes a valid comment
+                - If the new comment is similar to valid comments in the database, it's more likely to be valid
+                - Note that database comments may vary in quality - use them as examples, not absolute standards
 
                 Return only the valid JSON object without any additional text.""")
         ],
@@ -42,29 +51,37 @@ class CheckCommentAgent:
 
     def check_expert_comment(self, state: GraphState) -> GraphState:
         expert_comment = state["expert_comment"]
+        retriever = RetrieverAgent()
+        similar_comments = retriever.similarity_search(text = expert_comment)
 
         chain = self.prompt | RunnableParallel(output=self.llm, prompt=RunnablePassthrough(
         )) | RetryParser(llm=self.llm, parser=self.parser)
 
         output: ExpertComment = chain.invoke({
-            "expert_comment": expert_comment
+            "expert_comment": expert_comment,
+            "similar_comments": str(similar_comments)
         })
 
         return {"expert_comment": output}
     
     def check_expert_comment_tool(self, expert_comment: str) -> str:
 
+        retriever = RetrieverAgent()
+        similar_comments = retriever.similarity_search(text = expert_comment)
+
         chain = self.prompt | RunnableParallel(output=self.llm, prompt=RunnablePassthrough(
         )) | RetryParser(llm=self.llm, parser=self.parser)
 
         output: ExpertComment = chain.invoke({
-            "expert_comment": expert_comment
+            "expert_comment": expert_comment,
+            "similar_comments": similar_comments
         })
 
         return str(output)
 
     def __call__(self, state: GraphState) -> GraphState:
         return self.check_expert_comment(state)
+    
 
 @tool(description="tool to check expert_comment validity")
 def check_comment_validity(expert_comment) -> str:
@@ -83,7 +100,7 @@ def check_comment_validity(expert_comment) -> str:
     return output
 
 @tool(description="Asks the user to enter a new comment if the previous one was not valid (is_valid = False). After that check comment validity again")
-def get_new_comment_from_expert(reason) -> str:
+def get_new_comment_from_expert(reason, recommendations) -> str:
     user_query = input(
-        f"Your previous comment can't be used, because {reason}. \nWrite, please, new one: ")
+        f"Your previous comment can't be used, because {reason}\n. There are some recommendations {recommendations}. \nWrite, please, new one: ")
     return user_query.strip()
