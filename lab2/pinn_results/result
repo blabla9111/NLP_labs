@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-08T20:04:12.810450",
+    "session_id": "4a66e0fe"
+  },
+  "expert_comment": {
+    "comment": "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent.",
+    "is_valid": true,
+    "reason": "The comment is specific (identifies symmetry as unrealistic), states a clear purpose (adjust the forecast's descent rate), focuses on a single issue, and uses an objective tone. It aligns with valid database examples like 'The infection curve is too steep: The symmetry of the curve is unrealistic—the descent should be slower than the ascent.'",
+    "recommendations": "None",
+    "comment_class": "The behavior of the epidemic curve does not match the expert's expectations.",
+    "comment_subclass": "Graph of the number of infected"
+  },
+  "loss_weights": {
+    "data_loss_weight": 100.0,
+    "ODE_loss_weight": 2.0,
+    "initial_boundary_conditions_loss_weight": 0.2,
+    "peak_height_loss_weight": 0.0,
+    "slow_growth_penalty_weight": 0.0,
+    "rapid_growth_penalty_weight": 0.05,
+    "reason": "Expert comment indicates unrealistic symmetry in infection curve (descent should be slower than ascent). Increasing ODE_loss_weight (1.0→2.0) to better enforce SIRD dynamics and ensure proper decay behavior. Slight increase in initial_boundary_conditions_loss_weight (0.1→0.2) to improve terminal condition satisfaction. Small rapid_growth_penalty_weight (0.0→0.05) introduced to discourage unrealistically fast post-peak decline. Data fit remains prioritized (data_loss_weight=100.0) as issue is not data mismatch but dynamical behavior."
+  }
+}

@@ -9,14 +9,21 @@ from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_deepseek.chat_models import ChatDeepSeek
 from langgraph.types import Command
+
+from langgraph.graph.message import REMOVE_ALL_MESSAGES
+from langchain_core.messages import RemoveMessage
 from typing import Literal
 
 from lab2.agents.react_agent import ReActAgent
 from lab2.agents.pinn_loss_agent import PINNLossWieghtsGenerator
 from lab2.agents.weight_checker import WeightChecker
+from lab2.agents.writer_agent import PINNResultsWriter
 from lab2.agents.check_comment_agent import check_comment_validity, get_new_comment_from_expert
 from lab2.agent_tools.comment_classifier import get_class_subclass_names
 from lab2.data_formats.input_output_formats import GraphState, ExpertComment, PINNLossWeights, WeightValidationResult
+
+from langgraph.checkpoint.memory import InMemorySaver
+import uuid
 
 
 def need_retry_generator(state: GraphState) -> Command[Literal["PINNLossWeightsAgent", END]]:
@@ -28,8 +35,8 @@ def need_retry_generator(state: GraphState) -> Command[Literal["PINNLossWeightsA
         current_agent = "PINNLossWeightsAgent"
         goto = "PINNLossWeightsAgent"
     else:
-        current_agent = "END"
-        goto = END
+        current_agent = "WriterAgent"
+        goto = "WriterAgent"
 
     # note how Command allows you to BOTH update the graph state AND route to the next node
     return Command(
@@ -38,6 +45,24 @@ def need_retry_generator(state: GraphState) -> Command[Literal["PINNLossWeightsA
         # this is a replacement for an edge
         goto=goto,
     )
+
+def clear_some_messages(state: GraphState) -> GraphState:
+    """Clear ALL messages from the conversation"""
+    print("🧹 Clearing some messages from conversation history")
+    messages = state["messages"]
+    if len(messages) > 2:
+        # Create RemoveMessage for first two
+        remove_instructions = [RemoveMessage(id=m.id) for m in messages[:2]]
+        
+        # Keep the rest of the messages
+        remaining_messages = messages[2:]
+        
+        # Combine: RemoveMessage instructions first, then remaining messages
+        new_messages = remove_instructions + remaining_messages
+        
+        return {"messages": new_messages}
+    
+    return state
 
 llm = ChatDeepSeek(
     api_base=config.BASE_URL,
@@ -59,6 +84,7 @@ pinn_loss_weights_agent = PINNLossWieghtsGenerator(model=llm,
 checker_agent = WeightChecker(model=llm,
                               parser_output_class=WeightValidationResult)
 
+writer_agent = PINNResultsWriter(default_filename="result")
 # agent_node = AgentNode(model=llm,
 #                        tools=[get_new_query_from_user, get_topic, do_research],
 #                        response_format=ToolStrategy(ResultSummary))
@@ -71,19 +97,26 @@ checker_agent = WeightChecker(model=llm,
 
 
 builder = StateGraph(GraphState)
-builder.add_node("ReActAgentNode", react_agent)
+builder.add_node("ReActAgent", react_agent)
+builder.add_node("CleanerNode", clear_some_messages)
 builder.add_node("PINNLossWeightsAgent", pinn_loss_weights_agent)
 builder.add_node("WeightCheckerAgent", checker_agent)
 builder.add_node("RetryChecker", need_retry_generator)
+builder.add_node("WriterAgent", writer_agent)
 
-builder.add_edge(START, "ReActAgentNode")
-builder.add_edge("ReActAgentNode", "PINNLossWeightsAgent")
+builder.add_edge(START, "ReActAgent")
+builder.add_edge("ReActAgent", "CleanerNode")
+builder.add_edge("CleanerNode", "PINNLossWeightsAgent")
 builder.add_edge("PINNLossWeightsAgent", "WeightCheckerAgent")
 # builder.add_edge("GuthubNode", "WriterNode")
 # builder.add_edge("SummaryNode", "WriterNode")
 builder.add_edge("WeightCheckerAgent", "RetryChecker")
+builder.add_edge("WriterAgent", END)
 
-graph = builder.compile()
+
+checkpointer = InMemorySaver()
+
+graph = builder.compile(checkpointer=checkpointer)
 graph_png = graph.get_graph(xray=True)
 png_bytes = graph_png.draw_mermaid_png()
 
@@ -130,16 +163,60 @@ if __name__ == "__main__":
                     The JSON must contain all six required fields exactly as defined above.
 
                     Remember: Respond ONLY with the JSON object, nothing else."""
+    
+    # session_id = str(uuid.uuid4())[:8]
+    # configuration = {"configurable": {"thread_id": f"pinn_session_{session_id}"}}
+    
+    # First invocation
+    # initial_state = {
+    #     "messages": [
+    #         SystemMessage(content=system_prompt),
+    #         HumanMessage(content="I do not like. Curve should be smoother")
+    #     ],
+    #     "current_response": "",
+    #     "expert_comment": None,
+    #     "handoff_count": 0,
+    #     "session_id": session_id
+    # }
+    
+    # print("=== FIRST INVOCATION ===")
+    # final_state1 = graph.invoke(initial_state, config=configuration)
+    
+    # print(f"Final agent after first run: {final_state1.get('current_agent', 'Not set')}")
+    # print(f"Handoff count: {final_state1.get('handoff_count', 0)}")
+    
+    # # Second invocation with same config - should continue from saved state
+    # print("\n=== SECOND INVOCATION (same config) ===")
+    # new_input_state = {
+    #     "messages": [HumanMessage(content="Here's an improved comment: The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent.")],
+    #     "handoff_count": final_state1.get("handoff_count", 0),
+    #     "session_id": session_id
+    # }
+    
+    # final_state2 = graph.invoke(new_input_state, config=configuration)
+    # print(f"Final agent after second run: {final_state2.get('current_agent', 'Not set')}")
+    # print(f"Handoff count: {final_state2.get('handoff_count', 0)}")
+    
+    # # Verify persistence
+    # if final_state2.get('handoff_count', 0) > final_state1.get('handoff_count', 0):
+    #     print("\n✓ State persistence is WORKING: Handoff count increased from saved state")
+    # else:
+    #     print("\n✗ State persistence NOT working: Handoff count didn't persist")
+    # Создаем уникальный thread_id для этой сессии
+    session_id = str(uuid.uuid4())[:8]
+    configuration = {"configurable": {"thread_id": f"pinn_session_{session_id}"}}
+    
     initial_state = {
         "messages": [
             SystemMessage(content=system_prompt),
-            HumanMessage(content="I do not like. Curve should be smoother")
+            HumanMessage(content="The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent.")
         ],
         "current_response": "",
         "expert_comment": None,
-        "handoff_count": 0
+        "handoff_count": 0,
+        "session_id": session_id
     }
-    final_state = graph.invoke(initial_state)
+    final_state = graph.invoke(initial_state, config=configuration)
     print("Final state is")
     print(final_state['messages'])
     print("="*50)
