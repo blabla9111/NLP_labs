@@ -50,7 +50,9 @@ class CheckCommentAgent:
             partial_variables={"format_instructions": self.parser.get_format_instructions()})
 
     def check_expert_comment(self, state: GraphState) -> GraphState:
-        expert_comment = state["expert_comment"]
+        print("Check expert comment")
+        expert_comment = state["expert_comment"].comment
+        print(expert_comment)
         retriever = RetrieverAgent()
         similar_comments = retriever.similarity_search(text = expert_comment)
 

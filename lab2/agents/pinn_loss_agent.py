@@ -87,6 +87,8 @@ class PINNLossWieghtsGenerator:
             partial_variables={"format_instructions": self.parser.get_format_instructions()})
 
     def generate_weights(self, state: GraphState) -> GraphState:
+        print("PINNLossWeightsGenerator")
+        print(state["expert_comment"])
         comment = state["expert_comment"].comment
         comment_class = state["expert_comment"].comment_class
         comment_subclass = state["expert_comment"].comment_subclass
@@ -100,7 +102,8 @@ class PINNLossWieghtsGenerator:
             "comment_subclass": comment_subclass
         })
 
-        return {"loss_weights": output}
+        return {"loss_weights": output,
+                "current_agent":"PINNLossWeightsGenerator"}
 
     def __call__(self, state: GraphState) -> GraphState:
         return self.generate_weights(state)

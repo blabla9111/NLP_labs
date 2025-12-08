@@ -19,9 +19,17 @@ class PINNLossWeights(BaseModel):
     rapid_growth_penalty_weight: float = Field(default = "0.0", description = "Weight for penalizing unrealistically rapid infection growth rates before peak. Range: [0, 1]")
     reason: str = Field(default = "None", description = "Describe your decision")
 
+class WeightValidationResult(BaseModel):
+    is_valid: bool = Field(description="Whether all weights are valid")
+    errors: List[str] = Field(default_factory=list, description="List of validation errors")
+    suggested_fixes: List[str] = Field(default_factory=list, description="Suggested fixes for invalid weights")
+    reason: str = Field(description="Explanation of validation results")
 
 class GraphState(TypedDict):
     messages: List  # Сообщения (SystemMessage, HumanMessage)
     current_response: str  # Текущий ответ
     expert_comment: ExpertComment
     loss_weights: PINNLossWeights
+    validation_errors: List[str]
+    current_agent: str
+    handoff_count: int  # Track how many handoffs occurred
