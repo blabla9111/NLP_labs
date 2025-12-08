@@ -91,20 +91,26 @@ class WeightChecker:
             validation_errors.append("Reason field must be present and non-empty")
         
         # If basic validation passes, use LLM for semantic validation
+        validation_result = ""
         if not validation_errors:
-            chain = self.prompt | self.llm | self.parser
+            chain = self.prompt | RunnableParallel(output=self.llm, prompt=RunnablePassthrough(
+        )) | RetryParser(llm=self.llm, parser=self.parser)
+            config = {"configurable": {"thread_id": "1"}}
             validation_result = chain.invoke({
-                "weights": weights_dict,  # Pass as dict
-                "expert_comment": state["expert_comment"].comment,
-                "comment_class": state["expert_comment"].comment_class,
-                "comment_subclass": state["expert_comment"].comment_subclass
-            })
+                                            "weights": weights_dict,  # Pass as dict
+                                            "expert_comment": state["expert_comment"].comment,
+                                            "comment_class": state["expert_comment"].comment_class,
+                                            "comment_subclass": state["expert_comment"].comment_subclass
+                                        },
+                                            config)
             
             if not validation_result.is_valid:
                 validation_errors.extend(validation_result.errors)
         
         return {
+            "messages": state["messages"] + [validation_result],
             "validation_errors": validation_errors,
+            "handoff_count": state["handoff_count"] +1,
             "current_agent": "WeightChecker"
         }
 

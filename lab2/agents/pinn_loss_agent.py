@@ -97,12 +97,15 @@ class PINNLossWieghtsGenerator:
         )) | RetryParser(llm=self.llm, parser=self.parser)
 
         output: PINNLossWeights = chain.invoke({
-            "comment": comment,
-            "comment_class": comment_class,
-            "comment_subclass": comment_subclass
-        })
+                                                "comment": comment,
+                                                "comment_class": comment_class,
+                                                "comment_subclass": comment_subclass
+                                            })
 
-        return {"loss_weights": output,
+        return {
+                "messages": state["messages"] + [output],
+                "loss_weights": output,
+                "handoff_count": state["handoff_count"] +1,
                 "current_agent":"PINNLossWeightsGenerator"}
 
     def __call__(self, state: GraphState) -> GraphState:
