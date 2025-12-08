@@ -33,3 +33,4 @@ class GraphState(TypedDict):
     validation_errors: List[str]
     current_agent: str
     handoff_count: int  # Track how many handoffs occurred
+    session_id: str
