@@ -1,4 +1,3 @@
-
 from langchain.tools import tool
 from langchain_deepseek.chat_models import ChatDeepSeek
 from lab2.data_formats.input_output_formats import ExpertComment
@@ -18,8 +17,8 @@ def check_comment_validity(expert_comment) -> str:
     )
     agent = CheckCommentAgent(model=llm, parser_output_class=ExpertComment)
     output = agent.check_expert_comment_tool(expert_comment=expert_comment)
-    # print(output)
     return output
+
 
 @tool(description="Asks the user to enter a new comment if the previous one was not valid (is_valid = False). After that check comment validity again")
 def get_new_comment_from_expert(reason, recommendations) -> str:

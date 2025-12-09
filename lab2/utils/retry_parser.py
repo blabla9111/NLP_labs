@@ -22,7 +22,7 @@ class RetryParser(Runnable):
         prompt = cast(PromptValue, input["prompt"])
         while attempts < self.max_retries:
             try:
-                if random.random() < 0.1:
+                if random.random() < 0.0:
                     error_types = [
                         "Случайная ошибка JSON parsing",
                         "Внезапная ошибка валидации",

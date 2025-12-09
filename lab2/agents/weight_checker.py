@@ -20,7 +20,7 @@ class WeightChecker:
             {format_instructions}
             
             Return ONLY valid JSON in this exact format. Do not include any additional text."""),
-            
+
             ("human", """## Weight Validation Task
             
             Generated Weights to Validate:
@@ -47,71 +47,78 @@ class WeightChecker:
         ]).partial(format_instructions=self.parser.get_format_instructions())
 
     def validate_weights(self, state: GraphState) -> GraphState:
+        print("START WeightChecker")
         weights = state["loss_weights"]
-        expert_comment = state["expert_comment"]
-        
+
         # First, do basic range checking
         validation_errors = []
-        
+
         weights_dict = weights.dict()
-        
+
         # Check data_loss_weight
         data_weight = weights_dict.get("data_loss_weight", 0)
         if not (0 <= data_weight <= 100):
-            validation_errors.append(f"data_loss_weight ({data_weight}) must be between 0 and 100")
-        
+            validation_errors.append(
+                f"data_loss_weight ({data_weight}) must be between 0 and 100")
+
         # Check ODE_loss_weight
         ode_weight = weights_dict.get("ODE_loss_weight", 0)
         if not (0 <= ode_weight <= 10):
-            validation_errors.append(f"ODE_loss_weight ({ode_weight}) must be between 0 and 10")
-        
+            validation_errors.append(
+                f"ODE_loss_weight ({ode_weight}) must be between 0 and 10")
+
         # OPTION 2: Direct attribute access (cleaner)
         # Check data_loss_weight
         if not (0 <= weights.data_loss_weight <= 100):
-            validation_errors.append(f"data_loss_weight ({weights.data_loss_weight}) must be between 0 and 100")
-        
+            validation_errors.append(
+                f"data_loss_weight ({weights.data_loss_weight}) must be between 0 and 100")
+
         # Check ODE_loss_weight
         if not (0 <= weights.ODE_loss_weight <= 10):
-            validation_errors.append(f"ODE_loss_weight ({weights.ODE_loss_weight}) must be between 0 and 10")
-        
+            validation_errors.append(
+                f"ODE_loss_weight ({weights.ODE_loss_weight}) must be between 0 and 10")
+
         # Check other weights (0-1 range)
         other_weight_attrs = [
-            ("initial_boundary_conditions_loss_weight", weights.initial_boundary_conditions_loss_weight),
+            ("initial_boundary_conditions_loss_weight",
+             weights.initial_boundary_conditions_loss_weight),
             ("peak_height_loss_weight", weights.peak_height_loss_weight),
             ("slow_growth_penalty_weight", weights.slow_growth_penalty_weight),
             ("rapid_growth_penalty_weight", weights.rapid_growth_penalty_weight)
         ]
-        
+
         for name, weight in other_weight_attrs:
             if not (0 <= weight <= 1):
-                validation_errors.append(f"{name} ({weight}) must be between 0 and 1")
-        
+                validation_errors.append(
+                    f"{name} ({weight}) must be between 0 and 1")
+
         # Check reason field
         if not hasattr(weights, 'reason') or not weights.reason or weights.reason.strip() == "":
-            validation_errors.append("Reason field must be present and non-empty")
-        
+            validation_errors.append(
+                "Reason field must be present and non-empty")
+
         # If basic validation passes, use LLM for semantic validation
         validation_result = ""
         if not validation_errors:
             chain = self.prompt | RunnableParallel(output=self.llm, prompt=RunnablePassthrough(
-        )) | RetryParser(llm=self.llm, parser=self.parser)
+            )) | RetryParser(llm=self.llm, parser=self.parser)
             config = {"configurable": {"thread_id": "1"}}
             validation_result = chain.invoke({
-                                            "weights": weights_dict,  # Pass as dict
-                                            "expert_comment": state["expert_comment"].comment,
-                                            "comment_class": state["expert_comment"].comment_class,
-                                            "comment_subclass": state["expert_comment"].comment_subclass
-                                        },
-                                            config)
-            
+                "weights": weights_dict,  # Pass as dict
+                "expert_comment": state["expert_comment"].comment,
+                "comment_class": state["expert_comment"].comment_class,
+                "comment_subclass": state["expert_comment"].comment_subclass
+            },
+                config)
+
             if not validation_result.is_valid:
                 validation_errors.extend(validation_result.errors)
-        
+
         return {
             "messages": state["messages"] + [validation_result],
             "validation_errors": validation_errors,
-            "handoff_count": state["handoff_count"] +1,
-            "current_agent": "WeightChecker"
+            "handoff_count": state["handoff_count"] + 1,
+            "current_agent": "RetryChecker"
         }
 
     def __call__(self, state: GraphState) -> GraphState:

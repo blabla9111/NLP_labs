@@ -6,7 +6,7 @@ from lab2.data_formats.input_output_formats import GraphState, PINNLossWeights
 from lab2.utils.retry_parser import RetryParser
 
 
-class PINNLossWieghtsGenerator:
+class PINNLossWeightsGenerator:
     def __init__(self, model, parser_output_class):
         self.llm = model
         self.parser = PydanticOutputParser(pydantic_object=parser_output_class)
@@ -87,8 +87,7 @@ class PINNLossWieghtsGenerator:
             partial_variables={"format_instructions": self.parser.get_format_instructions()})
 
     def generate_weights(self, state: GraphState) -> GraphState:
-        print("PINNLossWeightsGenerator")
-        print(state["expert_comment"])
+        print("START PINNLossWeightsGenerator")
         comment = state["expert_comment"].comment
         comment_class = state["expert_comment"].comment_class
         comment_subclass = state["expert_comment"].comment_subclass
@@ -97,16 +96,17 @@ class PINNLossWieghtsGenerator:
         )) | RetryParser(llm=self.llm, parser=self.parser)
 
         output: PINNLossWeights = chain.invoke({
-                                                "comment": comment,
-                                                "comment_class": comment_class,
-                                                "comment_subclass": comment_subclass
-                                            })
+            "comment": comment,
+            "comment_class": comment_class,
+            "comment_subclass": comment_subclass
+        })
 
         return {
-                "messages": state["messages"] + [output],
-                "loss_weights": output,
-                "handoff_count": state["handoff_count"] +1,
-                "current_agent":"PINNLossWeightsGenerator"}
+            "messages": state["messages"] + [output],
+            "current_agent": "WeightCheckerAgent",
+            "loss_weights": output,
+            "handoff_count": state["handoff_count"] + 1
+        }
 
     def __call__(self, state: GraphState) -> GraphState:
         return self.generate_weights(state)

@@ -48,7 +48,7 @@ class CheckCommentAgent:
     def check_expert_comment(self, state: GraphState) -> GraphState:
         expert_comment = state["expert_comment"].comment
         retriever = RetrieverAgent()
-        similar_comments = retriever.similarity_search(text = expert_comment)
+        similar_comments = retriever.similarity_search(text=expert_comment)
 
         chain = self.prompt | RunnableParallel(output=self.llm, prompt=RunnablePassthrough(
         )) | RetryParser(llm=self.llm, parser=self.parser)
@@ -59,11 +59,11 @@ class CheckCommentAgent:
         })
 
         return {"expert_comment": output}
-    
+
     def check_expert_comment_tool(self, expert_comment: str) -> str:
 
         retriever = RetrieverAgent()
-        similar_comments = retriever.similarity_search(text = expert_comment)
+        similar_comments = retriever.similarity_search(text=expert_comment)
 
         chain = self.prompt | RunnableParallel(output=self.llm, prompt=RunnablePassthrough(
         )) | RetryParser(llm=self.llm, parser=self.parser)
@@ -77,4 +77,3 @@ class CheckCommentAgent:
 
     def __call__(self, state: GraphState) -> GraphState:
         return self.check_expert_comment(state)
-    

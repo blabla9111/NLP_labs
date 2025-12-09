@@ -13,9 +13,9 @@ class RetrieverAgent:
                         )
 
     def similarity_search(self, text, sentence_num = 5) -> List[str]:
+        print("START similarity_search from DB")
         results = self.vectordb.similarity_search(text, 
                                              k=sentence_num)
         sentences = [doc.page_content for doc in results]
-        print(sentences)
 
         return sentences
