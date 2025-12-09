@@ -98,6 +98,7 @@ output: веса для частей функции потерь
 ```bash
 # установка библиотек
 pip install -r requirements.txt
+cd NLP_labs/lab2
 
 # Настройка
 edit config.py  # добавить API-ключ
