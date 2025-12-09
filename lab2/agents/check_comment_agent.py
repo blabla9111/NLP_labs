@@ -1,10 +1,6 @@
 from langchain_core.output_parsers import PydanticOutputParser
-from langchain_deepseek.chat_models import ChatDeepSeek
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
-from langchain.tools import tool
-
-from lab2 import config
 from lab2.utils.retry_parser import RetryParser
 from lab2.data_formats.input_output_formats import ExpertComment, GraphState
 from lab2.agents.retriever_agent import RetrieverAgent
@@ -50,9 +46,7 @@ class CheckCommentAgent:
             partial_variables={"format_instructions": self.parser.get_format_instructions()})
 
     def check_expert_comment(self, state: GraphState) -> GraphState:
-        print("Check expert comment")
         expert_comment = state["expert_comment"].comment
-        print(expert_comment)
         retriever = RetrieverAgent()
         similar_comments = retriever.similarity_search(text = expert_comment)
 
@@ -84,25 +78,3 @@ class CheckCommentAgent:
     def __call__(self, state: GraphState) -> GraphState:
         return self.check_expert_comment(state)
     
-
-@tool(description="tool to check expert_comment validity")
-def check_comment_validity(expert_comment) -> str:
-    # parser = PydanticOutputParser(pydantic_object=ExpertComment)
-    llm = ChatDeepSeek(
-        api_base=config.BASE_URL,
-        base_url=config.BASE_URL,
-        api_key=config.API_KEY,
-        model=config.MODEL_NAME,
-        streaming=False,
-        timeout=240
-    )
-    agent = CheckCommentAgent(model=llm, parser_output_class=ExpertComment)
-    output = agent.check_expert_comment_tool(expert_comment=expert_comment)
-    print(output)
-    return output
-
-@tool(description="Asks the user to enter a new comment if the previous one was not valid (is_valid = False). After that check comment validity again")
-def get_new_comment_from_expert(reason, recommendations) -> str:
-    user_query = input(
-        f"Your previous comment can't be used, because {reason}\n. There are some recommendations {recommendations}. \nWrite, please, new one: ")
-    return user_query.strip()

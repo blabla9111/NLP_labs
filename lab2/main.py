@@ -10,7 +10,6 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_deepseek.chat_models import ChatDeepSeek
 from langgraph.types import Command
 
-from langgraph.graph.message import REMOVE_ALL_MESSAGES
 from langchain_core.messages import RemoveMessage
 from typing import Literal
 
@@ -18,7 +17,7 @@ from lab2.agents.react_agent import ReActAgent
 from lab2.agents.pinn_loss_agent import PINNLossWieghtsGenerator
 from lab2.agents.weight_checker import WeightChecker
 from lab2.agents.writer_agent import PINNResultsWriter
-from lab2.agents.check_comment_agent import check_comment_validity, get_new_comment_from_expert
+from lab2.agent_tools.comment_tools import check_comment_validity, get_new_comment_from_expert
 from lab2.agent_tools.comment_classifier import get_class_subclass_names
 from lab2.data_formats.input_output_formats import GraphState, ExpertComment, PINNLossWeights, WeightValidationResult
 
@@ -27,7 +26,7 @@ import uuid
 
 
 def need_retry_generator(state: GraphState) -> Command[Literal["PINNLossWeightsAgent", "WriterAgent"]]:
-    print("need_retry_generator")
+    print("START RetryChecker")
     validation_errors = state["validation_errors"]
     handoff_count = state["handoff_count"]
     # this is a replacement for a conditional edge function
@@ -48,16 +47,12 @@ def need_retry_generator(state: GraphState) -> Command[Literal["PINNLossWeightsA
 
 def clear_some_messages(state: GraphState) -> GraphState:
     """Clear ALL messages from the conversation"""
-    print("🧹 Clearing some messages from conversation history")
+    print("START CleanerNode")
     messages = state["messages"]
     if len(messages) > 2:
         # Create RemoveMessage for first two
         remove_instructions = [RemoveMessage(id=m.id) for m in messages[:2]]
-        
-        # Keep the rest of the messages
         remaining_messages = messages[2:]
-        
-        # Combine: RemoveMessage instructions first, then remaining messages
         new_messages = remove_instructions + remaining_messages
         
         return {"messages": new_messages}
@@ -85,15 +80,6 @@ checker_agent = WeightChecker(model=llm,
                               parser_output_class=WeightValidationResult)
 
 writer_agent = PINNResultsWriter(default_filename="result")
-# agent_node = AgentNode(model=llm,
-#                        tools=[get_new_query_from_user, get_topic, do_research],
-#                        response_format=ToolStrategy(ResultSummary))
-
-# github_node = GitHubRepoSearcher(github_token=config.GITHUB_API_TOKEN, default_max_results=3)
-
-# summary_node = SummaryGenerator(model=llm, parser_output_class=ResearchSummary)
-
-# writer_node = ResearchReportWriter()
 
 
 builder = StateGraph(GraphState)
@@ -108,8 +94,6 @@ builder.add_edge(START, "ReActAgent")
 builder.add_edge("ReActAgent", "CleanerNode")
 builder.add_edge("CleanerNode", "PINNLossWeightsAgent")
 builder.add_edge("PINNLossWeightsAgent", "WeightCheckerAgent")
-# builder.add_edge("GuthubNode", "WriterNode")
-# builder.add_edge("SummaryNode", "WriterNode")
 builder.add_edge("WeightCheckerAgent", "RetryChecker")
 builder.add_edge("WriterAgent", END)
 
