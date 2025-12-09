@@ -26,7 +26,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 import uuid
 
 
-def need_retry_generator(state: GraphState) -> Command[Literal["PINNLossWeightsAgent", END]]:
+def need_retry_generator(state: GraphState) -> Command[Literal["PINNLossWeightsAgent", "WriterAgent"]]:
     print("need_retry_generator")
     validation_errors = state["validation_errors"]
     handoff_count = state["handoff_count"]
