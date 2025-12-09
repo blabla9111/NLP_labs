@@ -1,0 +1,74 @@
+(venv) C:\Users\dinara\Desktop\NLP\NLP_labs\lab2>python main.py
+
+=== ТЕСТ 1: The symmetry of the infection curve is unrealistic... ===
+The tool is called: check_comment_validity
+START similarity_search from DB
+The tool is called: ExpertComment
+START CleanerNode
+START PINNLossWeightsGenerator
+START WeightChecker
+START RetryChecker
+START PINNResultsWriter
+📊 Report generated: pinn_results\pinn_results_1_20251209_175344.json
+✓ Сессия: 1
+  Итоговый агент: WriterAgent
+
+=== ТЕСТ 2: The infection peak seems too low compared to the t... ===
+The tool is called: check_comment_validity
+START similarity_search from DB
+The tool is called: ExpertComment
+START CleanerNode
+START PINNLossWeightsGenerator
+START WeightChecker
+START RetryChecker
+START PINNResultsWriter
+📊 Report generated: pinn_results\pinn_results_2_20251209_175503.json
+  Итоговый агент: WriterAgent
+
+=== ТЕСТ 3: I do not like the forecast.... ===
+The tool is called: check_comment_validity
+START similarity_search from DB
+The tool is called: get_new_comment_from_expert
+Your previous comment can't be used, because The comment lacks specificity, clear purpose, focus, and uses subjective language. It does not describe a concrete observation or problem in the forecast.
+. There are some recommendations Provide a specific observation (e.g., 'the peak is offset by 10 days'), state the purpose clearly (e.g., 'to adjust the timing of the peak'), focus on one issue, and use objective language (e.g., 'the model assumes constant transmissibility').. 
+Write, please, new one: The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent.
+The tool is called: check_comment_validity
+START similarity_search from DB
+The tool is called: ExpertComment
+The tool is called: get_class_subclass_names
+START CleanerNode
+START PINNLossWeightsGenerator
+START WeightChecker
+START RetryChecker
+START PINNResultsWriter
+📊 Report generated: pinn_results\pinn_results_3_20251209_180825.json
+✓ Сессия: 3
+  Итоговый агент: WriterAgent
+
+=== ТЕСТ 4: Too slow. It's bad!... ===
+The tool is called: check_comment_validity
+START similarity_search from DB
+START CleanerNode
+✗ Ошибка: 'NoneType' object has no attribute 'comment'
+
+=== ТЕСТ 5: What fiction book would you recommend for leisure ... ===
+The tool is called: check_comment_validity
+START similarity_search from DB
+The tool is called: get_new_comment_from_expert
+Your previous comment can't be used, because The comment is unrelated to the epidemiological forecast and does not address any specific issue with the model or data. It fails to meet criteria for concreteness, purpose, focus, and relevance to the forecast.
+. There are some recommendations Ensure comments address specific forecast elements (e.g., model assumptions, timing of peaks, policy impacts). Use objective language to describe a single, clear issue with actionable implications for the forecast..
+Write, please, new one: The infection peak seems too low compared to the total population. Peak should be around 15-20%.
+The tool is called: check_comment_validity
+START similarity_search from DB
+The tool is called: get_class_subclass_names
+Write, please, new one: The infection peak seems too low compared to the total population. Peak should be around 15-20%.
+The tool is called: check_comment_validity
+START similarity_search from DB
+The tool is called: get_class_subclass_names
+START CleanerNode
+START PINNLossWeightsGenerator
+✗ Ошибка: 'NoneType' object has no attribute 'comment'
+
+=== Все тесты завершены ===
+
+(venv) C:\Users\dinara\Desktop\NLP\NLP_labs\lab2>

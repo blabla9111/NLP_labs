@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-09T17:55:03.370191",
+    "session_id": 2
+  },
+  "expert_comment": {
+    "comment": "The infection peak seems too low compared to the total population. Peak should be around 15-20%.",
+    "is_valid": true,
+    "reason": "None",
+    "recommendations": "None",
+    "comment_class": "None",
+    "comment_subclass": "None"
+  },
+  "loss_weights": {
+    "data_loss_weight": 100.0,
+    "ODE_loss_weight": 1.0,
+    "initial_boundary_conditions_loss_weight": 0.1,
+    "peak_height_loss_weight": 0.05,
+    "slow_growth_penalty_weight": 0.0,
+    "rapid_growth_penalty_weight": 0.0,
+    "reason": "Expert comment indicates infection peak is too low (should be 15-20% of population). Increasing peak_height_loss_weight to 0.05 to penalize models that underpredict peak magnitude. Maintaining other weights since ODE constraints and boundary conditions aren't mentioned as problematic. Trade-off: Higher peak penalty may cause overfitting to peak height at the expense of other model aspects, but 0.05 is a conservative starting value."
+  }
+}

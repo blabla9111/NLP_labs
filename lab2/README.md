@@ -104,4 +104,7 @@ cd NLP_labs/lab2
 edit config.py  # добавить API-ключ
 
 # Запуск
-python main.py
+python main.
+```
+
+## Анализ результатов тестирования в [results_analysis.md](./results_analysis.md)

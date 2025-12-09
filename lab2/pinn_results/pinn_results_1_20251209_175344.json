@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-09T17:53:44.659001",
+    "session_id": 1
+  },
+  "expert_comment": {
+    "comment": "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent.",
+    "is_valid": true,
+    "reason": "The comment specifies a clear issue (curve symmetry) and provides a concrete adjustment (slower descent), aligning with valid examples in the database that focus on asymmetry between ascent/descent phases.",
+    "recommendations": "None",
+    "comment_class": "Infection Curve Symmetry",
+    "comment_subclass": "Asymmetry in Ascent/Descent Phases"
+  },
+  "loss_weights": {
+    "data_loss_weight": 100.0,
+    "ODE_loss_weight": 0.5,
+    "initial_boundary_conditions_loss_weight": 0.2,
+    "peak_height_loss_weight": 0.0,
+    "slow_growth_penalty_weight": 0.0,
+    "rapid_growth_penalty_weight": 0.0,
+    "reason": "Expert identified unrealistic symmetry in infection curve (ascent/descent phases). Reduced ODE loss weight (0.5) to allow model flexibility in adjusting descent dynamics beyond strict SIRD constraints. Increased initial boundary conditions weight (0.2) to ensure I(t_end)→0 while maintaining slower descent. Maintained data loss weight to preserve fit to observations. Trade-off: Reduced physics fidelity vs. improved realism in descent phase."
+  }
+}

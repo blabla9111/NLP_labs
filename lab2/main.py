@@ -76,7 +76,7 @@ pinn_loss_weights_agent = PINNLossWeightsGenerator(model=llm,
 checker_agent = WeightChecker(model=llm,
                               parser_output_class=WeightValidationResult)
 
-writer_agent = PINNResultsWriter(default_filename="result")
+writer_agent = PINNResultsWriter()
 
 
 builder = StateGraph(GraphState)
@@ -143,19 +143,66 @@ if __name__ == "__main__":
                     The JSON must contain all six required fields exactly as defined above.
 
                     Remember: Respond ONLY with the JSON object, nothing else."""
-    expert_comment = "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent."
-    session_id = str(uuid.uuid4())[:8]
-    configuration = {"configurable": {"thread_id": f"pinn_session_{session_id}"}}
+    # expert_comment = "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent."
+    # session_id = str(uuid.uuid4())[:8]
+    # configuration = {"configurable": {"thread_id": f"pinn_session_{session_id}"}}
     
-    initial_state = {
-        "messages": [
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=expert_comment)
-        ],
-        "current_response": "",
-        "current_agent": "ReActAgent",
-        "expert_comment": expert_comment,
-        "handoff_count": 0,
-        "session_id": session_id
-    }
-    final_state = graph.invoke(initial_state, config=configuration)
+    # initial_state = {
+    #     "messages": [
+    #         SystemMessage(content=system_prompt),
+    #         HumanMessage(content=expert_comment)
+    #     ],
+    #     "current_response": "",
+    #     "current_agent": "ReActAgent",
+    #     "expert_comment": expert_comment,
+    #     "handoff_count": 0,
+    #     "session_id": session_id
+    # }
+    # final_state = graph.invoke(initial_state, config=configuration)
+    test_expert_comments = [
+    # Комментарии по теме и корректные
+    "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent.",
+    "The infection peak seems too low compared to the total population. Peak should be around 15-20%.",
+    # Комментарии по теме, но не корректные
+    "I do not like the forecast.",
+    "Too slow. It's bad!",
+    # Комментарий не по теме
+    "What fiction book would you recommend for leisure reading?"]
+
+    for i, expert_comment in enumerate(test_expert_comments, 1):
+        print(f"\n=== ТЕСТ {i}: {expert_comment[:50]}... ===")
+        
+        session_id = i
+        configuration = {"configurable": {"thread_id": f"pinn_session_{session_id}"}}
+        
+        initial_state = {
+            "messages": [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=expert_comment)
+            ],
+            "current_response": "",
+            "current_agent": "ReActAgent",
+            "expert_comment": expert_comment,
+            "handoff_count": 0,
+            "session_id": session_id
+        }
+        
+        try:
+            # Предполагаем, что graph уже создан в вашем коде
+            final_state = graph.invoke(initial_state, config=configuration)
+            
+            # Выводим основные результаты
+            print(f"✓ Сессия: {session_id}")
+            print(f"  Итоговый агент: {final_state.get('current_agent', 'N/A')}")
+            
+            if "pinn_weights" in final_state:
+                weights = final_state["pinn_weights"]
+                print(f"  Веса PINN:")
+                for key, value in weights.items():
+                    if isinstance(value, (int, float)):
+                        print(f"    {key}: {value:.4f}")
+            
+        except Exception as e:
+            print(f"✗ Ошибка: {str(e)}")
+    
+    print("\n=== Все тесты завершены ===")
