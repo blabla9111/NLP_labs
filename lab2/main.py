@@ -143,22 +143,7 @@ if __name__ == "__main__":
                     The JSON must contain all six required fields exactly as defined above.
 
                     Remember: Respond ONLY with the JSON object, nothing else."""
-    # expert_comment = "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent."
-    # session_id = str(uuid.uuid4())[:8]
-    # configuration = {"configurable": {"thread_id": f"pinn_session_{session_id}"}}
     
-    # initial_state = {
-    #     "messages": [
-    #         SystemMessage(content=system_prompt),
-    #         HumanMessage(content=expert_comment)
-    #     ],
-    #     "current_response": "",
-    #     "current_agent": "ReActAgent",
-    #     "expert_comment": expert_comment,
-    #     "handoff_count": 0,
-    #     "session_id": session_id
-    # }
-    # final_state = graph.invoke(initial_state, config=configuration)
     test_expert_comments = [
     # Комментарии по теме и корректные
     "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent.",
@@ -206,3 +191,21 @@ if __name__ == "__main__":
             print(f"✗ Ошибка: {str(e)}")
     
     print("\n=== Все тесты завершены ===")
+    
+    # Пример с единичным запросом
+    # expert_comment = "The symmetry of the infection curve is unrealistic - the descent should be slower than the ascent."
+    # session_id = str(uuid.uuid4())[:8]
+    # configuration = {"configurable": {"thread_id": f"pinn_session_{session_id}"}}
+    
+    # initial_state = {
+    #     "messages": [
+    #         SystemMessage(content=system_prompt),
+    #         HumanMessage(content=expert_comment)
+    #     ],
+    #     "current_response": "",
+    #     "current_agent": "ReActAgent",
+    #     "expert_comment": expert_comment,
+    #     "handoff_count": 0,
+    #     "session_id": session_id
+    # }
+    # final_state = graph.invoke(initial_state, config=configuration)
